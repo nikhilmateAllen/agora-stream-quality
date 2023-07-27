@@ -226,6 +226,7 @@ async function startBasicCall() {
       options.role = 'host';
       // Call the method to set the role as Host.
       await agoraEngine.setClientRole(options.role);
+      await join()
       if (channelParameters.localVideoTrack != null) {
         // Publish the local audio and video track in the channel.
         await agoraEngine.publish([channelParameters.localAudioTrack, channelParameters.localVideoTrack]);
@@ -234,7 +235,6 @@ async function startBasicCall() {
         // Start playing the local video.
         channelParameters.localVideoTrack.play(localPlayerContainer);
       }
-      await join()
     }
     document.getElementById('audience').onclick = async function () {
       options.role = 'audience';
@@ -273,7 +273,7 @@ async function startBasicCall() {
         uid: 0,
       };
       // Enable dual-stream mode.
-      agoraEngine.enableDualStream();
+      // agoraEngine.enableDualStream();
       if (options.role == '') {
         window.alert("Select a user role first!");
         return;
@@ -318,13 +318,6 @@ async function startBasicCall() {
       });
 
       // Publish the local audio and video track if the user joins as a host.
-      if (options.role == 'host') {
-        // Publish the local audio and video tracks in the channel.
-        await agoraEngine.publish([channelParameters.localAudioTrack, channelParameters.localVideoTrack]);
-        // Play the local video track.
-        channelParameters.localVideoTrack.play(localPlayerContainer);
-        console.log("publish success!");
-      }
     }
   }
 }
