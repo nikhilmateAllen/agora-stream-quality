@@ -264,7 +264,7 @@ async function startBasicCall() {
       options = {
         ...options,
         // Pass your App ID here.
-        appId: document.getElementById('appId').value,
+        appId: document.getElementById('appid').value,
         // Set the channel name.
         channel: document.getElementById('channel').value,
         // Pass your temp token here.
