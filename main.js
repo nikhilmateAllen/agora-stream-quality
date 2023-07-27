@@ -221,7 +221,6 @@ async function startBasicCall() {
       window.location.reload();
     }
     document.getElementById('host').onclick = async function () {
-      console.log('hhhhhhooooosssstt')
       // Save the selected role in a variable for reuse.
       options.role = 'host';
       // Call the method to set the role as Host.
@@ -250,10 +249,8 @@ async function startBasicCall() {
     }
 
     document.getElementById('opt-mode').onchange = async function(ev) {
-      console.log('onchange')
       let mode = ev.target.value
       options.optimizationMode = mode
-      console.log(channelParameters)
       if (channelParameters.localVideoTrack != null) {
         await channelParameters.localVideoTrack.setOptimizationMode(mode)
         console.log('Changed Optimization mode')
