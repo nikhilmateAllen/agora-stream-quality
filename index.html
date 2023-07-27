@@ -9,7 +9,30 @@
         <h2 class="left-align">Get started with interactive live streaming</h2>
         <div class="row">
             <div>
-                <button type="button" id="join">Join</button>
+                <div style="display: flex;">
+                  <div class="col-sm sso-hidden">
+                    <p class="join-info-text">AppID</p>
+                    <input id="appid" type="text" placeholder="enter appid">
+                    <p class="tips">If you don`t know what is your appid, checkout <a
+                        href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#a-nameappidaapp-id">this</a>
+                    </p>
+                  </div>
+                  <div class="col-sm sso-hidden">
+                    <p class="join-info-text">Token(optional)</p>
+                    <input id="token" type="text" placeholder="enter token">
+                    <p class="tips">If you don`t know what is your token, checkout <a
+                        href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#a-namekeyadynamic-key">this</a>
+                    </p>
+                  </div>
+                  <div class="col-sm">
+                    <p class="join-info-text">Channel</p>
+                    <input id="channel" type="text" placeholder="enter channel name" required>
+                    <p class="tips">If you don`t know what is your channel, checkout <a
+                        href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#channel">this</a></p>
+                  </div>
+                </div>
+                <button type="button" id="host">Join As Host</button>
+                <button type="button" id="audience">Join As Audience</button>  
                 <button type="button" id="leave">Leave</button>
                 <button type="button" id="audioMixing">Start audio mixing</button>
                 <button type="button" id="statistics">Show Statistics</button><br>
@@ -22,6 +45,14 @@
                 <label id= "upLinkIndicator">Good</label><br>
                 <label id= "downLinkLabel">DownlinkQuality :</label>
                 <label id= "downLinkIndicator">Good</label>
+                <div>
+                  <label for="opt-mode">Optimization mode</label>
+                  <select id="opt-mode">
+                    <option key="balanced">Balanced</option>
+                    <option key="detail">Detail</option>
+                    <option key="motion">Motion</option>
+                  </select>
+                </div>
             </div>
         </div>
     </body>

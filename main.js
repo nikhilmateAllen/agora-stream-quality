@@ -11,7 +11,8 @@ let options =
   // Set the user ID.
   uid: 0,
   // Set the user role
-  role: 'host' //audience
+  role: 'host', //audience
+  optimizationMode: 'detail'
 };
 
 let channelParameters =
@@ -205,8 +206,72 @@ async function startBasicCall() {
         ", RTT :" + rtcStats.RTT + " }");
     }
 
-    // Listen to the Join button click event.
-    document.getElementById("join").onclick = async function () {
+    // Listen to the Leave button click event.
+    document.getElementById('leave').onclick = async function () {
+      // Destroy the local audio and video tracks.
+      channelParameters.localAudioTrack.close();
+      channelParameters.localVideoTrack.close();
+      // Remove the containers you created for the local video and remote video.
+      removeVideoDiv(remotePlayerContainer.id);
+      removeVideoDiv(localPlayerContainer.id);
+      // Leave the channel
+      await agoraEngine.leave();
+      console.log("You left the channel");
+      // Refresh the page for reuse
+      window.location.reload();
+    }
+    document.getElementById('host').onclick = async function () {
+      console.log('hhhhhhooooosssstt')
+      // Save the selected role in a variable for reuse.
+      options.role = 'host';
+      // Call the method to set the role as Host.
+      await agoraEngine.setClientRole(options.role);
+      if (channelParameters.localVideoTrack != null) {
+        // Publish the local audio and video track in the channel.
+        await agoraEngine.publish([channelParameters.localAudioTrack, channelParameters.localVideoTrack]);
+        // Stop playing the remote video.
+        channelParameters.remoteVideoTrack.stop();
+        // Start playing the local video.
+        channelParameters.localVideoTrack.play(localPlayerContainer);
+      }
+      await join()
+    }
+    document.getElementById('audience').onclick = async function () {
+      options.role = 'audience';
+      if (channelParameters.localAudioTrack != null && channelParameters.localVideoTrack != null) {
+        if (channelParameters.remoteVideoTrack != null) {
+          // Replace the current video track with remote video track
+          await channelParamaters.localVideoTrack.replaceTrack(channelParamaters.remoteVideoTrack, true);
+        }
+      }
+      // Call the method to set the role as Audience.
+      await agoraEngine.setClientRole(options.role);
+      await join()
+    }
+
+    document.getElementById('opt-mode').onchange = async function(ev) {
+      console.log('onchange')
+      let mode = ev.target.value
+      options.optimizationMode = mode
+      console.log(channelParameters)
+      if (channelParameters.localVideoTrack != null) {
+        await channelParameters.localVideoTrack.setOptimizationMode(mode)
+        console.log('Changed Optimization mode')
+      }
+    }
+
+    async function join(){
+      options = {
+        ...options,
+        // Pass your App ID here.
+        appId: document.getElementById('appId').value,
+        // Set the channel name.
+        channel: document.getElementById('channel').value,
+        // Pass your temp token here.
+        token: document.getElementById('token').value,
+        // Set the user ID.
+        uid: 0,
+      };
       // Enable dual-stream mode.
       agoraEngine.enableDualStream();
       if (options.role == '') {
@@ -232,7 +297,7 @@ async function startBasicCall() {
           frameRate: 15,
           bitrateMin: 600,
           bitrateMax: 1000,
-          optimizationMode: "detail",
+          optimizationMode: options.optimizationMode, //balanced, motion
 
         },
       });
@@ -259,50 +324,6 @@ async function startBasicCall() {
         // Play the local video track.
         channelParameters.localVideoTrack.play(localPlayerContainer);
         console.log("publish success!");
-      }
-    }
-    // Listen to the Leave button click event.
-    document.getElementById('leave').onclick = async function () {
-      // Destroy the local audio and video tracks.
-      channelParameters.localAudioTrack.close();
-      channelParameters.localVideoTrack.close();
-      // Remove the containers you created for the local video and remote video.
-      removeVideoDiv(remotePlayerContainer.id);
-      removeVideoDiv(localPlayerContainer.id);
-      // Leave the channel
-      await agoraEngine.leave();
-      console.log("You left the channel");
-      // Refresh the page for reuse
-      window.location.reload();
-    }
-    document.getElementById('host').onclick = async function () {
-      if (document.getElementById('host').checked) {
-        // Save the selected role in a variable for reuse.
-        options.role = 'host';
-        // Call the method to set the role as Host.
-        await agoraEngine.setClientRole(options.role);
-        if (channelParameters.localVideoTrack != null) {
-          // Publish the local audio and video track in the channel.
-          await agoraEngine.publish([channelParameters.localAudioTrack, channelParameters.localVideoTrack]);
-          // Stop playing the remote video.
-          channelParameters.remoteVideoTrack.stop();
-          // Start playing the local video.
-          channelParameters.localVideoTrack.play(localPlayerContainer);
-        }
-      }
-    }
-    document.getElementById('Audience').onclick = async function () {
-      if (document.getElementById('Audience').checked) {
-        // Save the selected role in a variable for reuse.
-        options.role = 'audience';
-        if (channelParameters.localAudioTrack != null && channelParameters.localVideoTrack != null) {
-          if (channelParameters.remoteVideoTrack != null) {
-            // Replace the current video track with remote video track
-            await channelParamaters.localVideoTrack.replaceTrack(channelParamaters.remoteVideoTrack, true);
-          }
-        }
-        // Call the method to set the role as Audience.
-        await agoraEngine.setClientRole(options.role);
       }
     }
   }
