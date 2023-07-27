@@ -44,9 +44,9 @@ async function startBasicCall() {
   // Create an instance of the Agora Engine
   const agoraEngine = AgoraRTC.createClient({ mode: "live", codec: "vp9" });
   // Dynamically create a container in the form of a DIV element to play the remote video track.
-  const remotePlayerContainer = document.createElement("div");
+  const remotePlayerContainer = document.querySelector(".remote-player");
   // Dynamically create a container in the form of a DIV element to play the local video track.
-  const localPlayerContainer = document.createElement('div');
+  const localPlayerContainer = document.querySelector('.local-player');
   // Specify the ID of the DIV container. You can use the uid of the local user.
   localPlayerContainer.id = options.uid;
   // Set the textContent property of the local video container to the local user id.
@@ -59,6 +59,7 @@ async function startBasicCall() {
   remotePlayerContainer.style.width = "640px";
   remotePlayerContainer.style.height = "480px";
   remotePlayerContainer.style.padding = "15px 5px 5px 5px";
+  remotePlayerContainer.textContent = "Remote users";
 
   AgoraRTC.getDevices()
     .then(devices => {
@@ -114,7 +115,6 @@ async function startBasicCall() {
       channelParameters.remoteUid = user.uid.toString();
       remotePlayerContainer.textContent = "Remote user " + user.uid.toString();
       // Append the remote container to the page body.
-      document.body.append(remotePlayerContainer);
       if (options.role != 'host') {
         // Play the remote video track.
         channelParameters.remoteVideoTrack.play(remotePlayerContainer);
@@ -167,11 +167,10 @@ async function startBasicCall() {
   window.onload = function () {
     document.getElementById('testDevices').onclick = async function () {
       if (isDeviceTestRunning == false) {
-        videoTrack = AgoraRTC.createCameraVideoTrack({ cameraId: videoDevicesDropDown.value });
-        audioTrack = AgoraRTC.createMicrophoneAudioTrack({ microphoneId: audioDevicesDropDown.value });
-        document.body.append(localPlayerContainer);
-        (await videoTrack).play(localPlayerContainer);
-        (await audioTrack).play();
+        videoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: videoDevicesDropDown.value });
+        audioTrack = await AgoraRTC.createMicrophoneAudioTrack({ microphoneId: audioDevicesDropDown.value });
+        videoTrack.play(localPlayerContainer);
+        audioTrack.play();
         isDeviceTestRunning = true;
         document.getElementById("testDevices").innerHTML = "Stop test";
       }
@@ -230,22 +229,22 @@ async function startBasicCall() {
         // Publish the local audio and video track in the channel.
         await agoraEngine.publish([channelParameters.localAudioTrack, channelParameters.localVideoTrack]);
         // Stop playing the remote video.
-        channelParameters.remoteVideoTrack.stop();
+        if(channelParameters.remoteVideoTrack != null) channelParameters.remoteVideoTrack.stop();
         // Start playing the local video.
         channelParameters.localVideoTrack.play(localPlayerContainer);
       }
     }
     document.getElementById('audience').onclick = async function () {
       options.role = 'audience';
+      // Call the method to set the role as Audience.
+      await agoraEngine.setClientRole(options.role);
+      await join()
       if (channelParameters.localAudioTrack != null && channelParameters.localVideoTrack != null) {
         if (channelParameters.remoteVideoTrack != null) {
           // Replace the current video track with remote video track
           await channelParamaters.localVideoTrack.replaceTrack(channelParamaters.remoteVideoTrack, true);
         }
       }
-      // Call the method to set the role as Audience.
-      await agoraEngine.setClientRole(options.role);
-      await join()
     }
 
     document.getElementById('opt-mode').onchange = async function(ev) {
@@ -303,16 +302,16 @@ async function startBasicCall() {
       document.body.append(localPlayerContainer);
       // Set a stream fallback option to automatically switch remote video quality when network conditions degrade. 
       agoraEngine.setStreamFallbackOption(channelParameters.remoteUid, 1);
-      document.getElementById(remotePlayerContainer.id).addEventListener('click', function () {
-        if (isHighRemoteVideoQuality == false) {
-          agoraEngine.setRemoteVideoStreamType(channelParameters.remoteUid, 0);
-          isHighRemoteVideoQuality = true;
-        }
-        else {
-          agoraEngine.setRemoteVideoStreamType(channelParameters.remoteUid, 1);
-          isHighRemoteVideoQuality = false;
-        }
-      });
+      // document.getElementById(remotePlayerContainer.id).addEventListener('click', function () {
+      //   if (isHighRemoteVideoQuality == false) {
+      //     agoraEngine.setRemoteVideoStreamType(channelParameters.remoteUid, 0);
+      //     isHighRemoteVideoQuality = true;
+      //   }
+      //   else {
+      //     agoraEngine.setRemoteVideoStreamType(channelParameters.remoteUid, 1);
+      //     isHighRemoteVideoQuality = false;
+      //   }
+      // });
 
       // Publish the local audio and video track if the user joins as a host.
     }
