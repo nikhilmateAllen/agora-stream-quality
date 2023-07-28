@@ -1,7 +1,6 @@
 import AgoraRTC from "agora-rtc-sdk-ng"
 
-let options =
-{
+let options = {
   // Pass your App ID here.
   appId: '',
   // Set the channel name.
@@ -15,8 +14,7 @@ let options =
   optimizationMode: 'detail'
 };
 
-let channelParameters =
-{
+let channelParameters = {
   // A variable to hold a local audio track.
   localAudioTrack: null,
   // A variable to hold a local video track.
@@ -290,7 +288,7 @@ async function startBasicCall() {
           width: 640,
           // Specify a value range and an ideal value
           height: { ideal: 480, min: 400, max: 500 },
-          frameRate: 15,
+          frameRate: 5,
           bitrateMin: 600,
           bitrateMax: 1000,
           optimizationMode: options.optimizationMode, //balanced, motion
