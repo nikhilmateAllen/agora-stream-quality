@@ -163,6 +163,15 @@ async function startBasicCall() {
     }
   });
   window.onload = function () {
+    var urlParams = new URL(location.href).searchParams;
+    options.appId = urlParams.get("appId");
+    options.channel = urlParams.get("channel");
+    options.token = urlParams.get("token");
+    options.uid = urlParams.get("uid");
+    document.getElementById('appid').value = options.appId
+    document.getElementById('channel').value = options.channel
+    document.getElementById('token').value = options.token
+
     document.getElementById('testDevices').onclick = async function () {
       if (isDeviceTestRunning == false) {
         videoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: videoDevicesDropDown.value });
@@ -266,6 +275,17 @@ async function startBasicCall() {
         // Set the user ID.
         uid: 0,
       };
+      // const urlParams = new URLSearchParams(window.location.search);
+      const url = new URL(location);
+      for (const key in options) {
+        if (Object.hasOwnProperty.call(options, key)) {
+          const element = options[key];
+          // urlParams.set(key, options[key]);
+          url.searchParams.set(key, element);
+        }
+      }
+      history.pushState({}, "", url);
+      // window.location.search = urlParams;
       // Enable dual-stream mode.
       // agoraEngine.enableDualStream();
       if (options.role == '') {
