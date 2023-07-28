@@ -171,6 +171,7 @@ async function startBasicCall() {
     document.getElementById('appid').value = options.appId
     document.getElementById('channel').value = options.channel
     document.getElementById('token').value = options.token
+    document.getElementById('opt-mode').value = options.optimizationMode
 
     document.getElementById('testDevices').onclick = async function () {
       if (isDeviceTestRunning == false) {
