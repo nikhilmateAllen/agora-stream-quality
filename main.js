@@ -1,7 +1,6 @@
 import AgoraRTC from "agora-rtc-sdk-ng"
 
-let options =
-{
+let options = {
   // Pass your App ID here.
   appId: '',
   // Set the channel name.
@@ -15,8 +14,7 @@ let options =
   optimizationMode: 'detail'
 };
 
-let channelParameters =
-{
+let channelParameters = {
   // A variable to hold a local audio track.
   localAudioTrack: null,
   // A variable to hold a local video track.
@@ -165,6 +163,16 @@ async function startBasicCall() {
     }
   });
   window.onload = function () {
+    var urlParams = new URL(location.href).searchParams;
+    options.appId = urlParams.get("appId");
+    options.channel = urlParams.get("channel");
+    options.token = urlParams.get("token");
+    options.uid = urlParams.get("uid");
+    document.getElementById('appid').value = options.appId
+    document.getElementById('channel').value = options.channel
+    document.getElementById('token').value = options.token
+    document.getElementById('opt-mode').value = options.optimizationMode
+
     document.getElementById('testDevices').onclick = async function () {
       if (isDeviceTestRunning == false) {
         videoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: videoDevicesDropDown.value });
@@ -268,6 +276,17 @@ async function startBasicCall() {
         // Set the user ID.
         uid: 0,
       };
+      // const urlParams = new URLSearchParams(window.location.search);
+      const url = new URL(location);
+      for (const key in options) {
+        if (Object.hasOwnProperty.call(options, key)) {
+          const element = options[key];
+          // urlParams.set(key, options[key]);
+          url.searchParams.set(key, element);
+        }
+      }
+      history.pushState({}, "", url);
+      // window.location.search = urlParams;
       // Enable dual-stream mode.
       // agoraEngine.enableDualStream();
       if (options.role == '') {
@@ -290,7 +309,7 @@ async function startBasicCall() {
           width: 640,
           // Specify a value range and an ideal value
           height: { ideal: 480, min: 400, max: 500 },
-          frameRate: 15,
+          frameRate: 5,
           bitrateMin: 600,
           bitrateMax: 1000,
           optimizationMode: options.optimizationMode, //balanced, motion
